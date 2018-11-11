@@ -1,5 +1,9 @@
 Go package `tmpenv`
 ===================
+[![Linux/Mac Build Status][travisci-badge]][travisci]
+[![Windows Build Status][appveyor-badge]][appveyor]
+[![Coverage Report][codecov-badge]][codecov]
+[![Documentation][doc-badge]][doc]
 
 `tmpenv` is a small Go package for replacing environment variables temporarily.
 
@@ -79,3 +83,13 @@ func TestFoo(t *testing.T) {
 ## License
 
 [MIT License](LICENSE.txt)
+
+
+[doc-badge]: https://godoc.org/github.com/rhysd/go-tmpenv?status.svg
+[doc]: http://godoc.org/github.com/rhysd/go-tmpenv
+[travisci-badge]: https://travis-ci.org/rhysd/go-tmpenv.svg?branch=master
+[travisci]: https://travis-ci.org/rhysd/go-tmpenv
+[appveyor-badge]: https://ci.appveyor.com/api/projects/status/5pbcku1buw8gnqu9/branch/master?svg=true
+[appveyor]: https://ci.appveyor.com/project/rhysd/go-tmpenv
+[codecov-badge]: https://codecov.io/gh/rhysd/go-tmpenv/branch/master/graph/badge.svg
+[codecov]: https://codecov.io/gh/rhysd/go-tmpenv
