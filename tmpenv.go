@@ -48,7 +48,8 @@ func (guard *Envguard) Remove(keys ...string) (deleted bool) {
 	return
 }
 
-// Restore restores stored environment variable values.
+// Restore restores stored environment variable values. This method is usually called with 'defer' to
+// ensure the state to be restored.
 func (guard *Envguard) Restore() error {
 	for k, v := range guard.maybeMod {
 		if err := os.Setenv(k, v); err != nil {
