@@ -195,20 +195,22 @@ func TestSetenvs(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
+	panicIfErr(os.Setenv("TMPENV_TEST_ALL_FOO", "foo"))
+	defer os.Unsetenv("TMPENV_TEST_ALL_FOO")
+
 	want := os.Environ()
 	sort.Strings(want)
 
-	prev := os.Getenv("LANG")
-	defer func() {
-		os.Setenv("LANG", prev)
-	}()
+	prev := os.Getenv("TMPENV_TEST_ALL_FOO")
 
 	g := All()
 
 	mod := prev + "-modified"
-	g.Setenv("LANG", mod)
+	if err := g.Setenv("TMPENV_TEST_ALL_FOO", mod); err != nil {
+		t.Fatal(err)
+	}
 
-	if v := os.Getenv("LANG"); v != mod {
+	if v := os.Getenv("TMPENV_TEST_ALL_FOO"); v != mod {
 		t.Fatal("Environment variable was not updated:", v, mod)
 	}
 
@@ -216,7 +218,7 @@ func TestAll(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if v := os.Getenv("LANG"); v != prev {
+	if v := os.Getenv("TMPENV_TEST_ALL_FOO"); v != prev {
 		t.Fatal("Value of $LANG was not restored:", v, prev)
 	}
 
