@@ -1,4 +1,4 @@
-package envguard
+package tmpenv
 
 import (
 	"os"
@@ -20,25 +20,25 @@ func fatalIfErr(err error, t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	envs := map[string]string{
-		"ENVGUARD_TEST_ADD_FOO": "foo",
-		"ENVGUARD_TEST_ADD_BAR": "",
+		"TMPENV_TEST_ADD_FOO": "foo",
+		"TMPENV_TEST_ADD_BAR": "",
 	}
-	defer os.Unsetenv("ENVGUARD_TEST_ADD_PIYO")
+	defer os.Unsetenv("TMPENV_TEST_ADD_PIYO")
 
 	for k, v := range envs {
 		panicIfErr(os.Setenv(k, v))
 	}
 
 	g := New()
-	g.Add("ENVGUARD_TEST_ADD_FOO", "ENVGUARD_TEST_ADD_BAR", "ENVGUARD_TEST_ADD_PIYO")
+	g.Add("TMPENV_TEST_ADD_FOO", "TMPENV_TEST_ADD_BAR", "TMPENV_TEST_ADD_PIYO")
 
-	if v, ok := os.LookupEnv("ENVGUARD_TEST_ADD_PIYO"); ok {
-		t.Fatal("$ENVGUARD_TEST_ADD_PIYO should not exist:", v)
+	if v, ok := os.LookupEnv("TMPENV_TEST_ADD_PIYO"); ok {
+		t.Fatal("$TMPENV_TEST_ADD_PIYO should not exist:", v)
 	}
 
-	panicIfErr(os.Setenv("ENVGUARD_TEST_ADD_FOO", "aaa"))
-	panicIfErr(os.Setenv("ENVGUARD_TEST_ADD_BAR", "bbb"))
-	panicIfErr(os.Setenv("ENVGUARD_TEST_ADD_PIYO", "ccc"))
+	panicIfErr(os.Setenv("TMPENV_TEST_ADD_FOO", "aaa"))
+	panicIfErr(os.Setenv("TMPENV_TEST_ADD_BAR", "bbb"))
+	panicIfErr(os.Setenv("TMPENV_TEST_ADD_PIYO", "ccc"))
 
 	if err := g.Restore(); err != nil {
 		t.Fatal(err)
@@ -51,17 +51,17 @@ func TestAdd(t *testing.T) {
 		}
 	}
 
-	if e, ok := os.LookupEnv("ENVGUARD_TEST_ADD_PIYO"); ok {
+	if e, ok := os.LookupEnv("TMPENV_TEST_ADD_PIYO"); ok {
 		t.Error("Environment variable was not erased: ", e)
 	}
 }
 
 func TestSetenv(t *testing.T) {
 	envs := map[string]string{
-		"ENVGUARD_TEST_SETENV_FOO": "foo",
-		"ENVGUARD_TEST_SETENV_BAR": "",
+		"TMPENV_TEST_SETENV_FOO": "foo",
+		"TMPENV_TEST_SETENV_BAR": "",
 	}
-	defer os.Unsetenv("ENVGUARD_TEST_SETENV_PIYO")
+	defer os.Unsetenv("TMPENV_TEST_SETENV_PIYO")
 
 	for k, v := range envs {
 		panicIfErr(os.Setenv(k, v))
@@ -70,9 +70,9 @@ func TestSetenv(t *testing.T) {
 	g := New()
 
 	added := map[string]string{
-		"ENVGUARD_TEST_SETENV_FOO":  "aaa",
-		"ENVGUARD_TEST_SETENV_BAR":  "bbb",
-		"ENVGUARD_TEST_SETENV_PIYO": "ccc",
+		"TMPENV_TEST_SETENV_FOO":  "aaa",
+		"TMPENV_TEST_SETENV_BAR":  "bbb",
+		"TMPENV_TEST_SETENV_PIYO": "ccc",
 	}
 	for k, v := range added {
 		if err := g.Setenv(k, v); err != nil {
@@ -101,32 +101,32 @@ func TestSetenv(t *testing.T) {
 		}
 	}
 
-	if e, ok := os.LookupEnv("ENVGUARD_TEST_SETENV_PIYO"); ok {
+	if e, ok := os.LookupEnv("TMPENV_TEST_SETENV_PIYO"); ok {
 		t.Error("Environment variable was not erased: ", e)
 	}
 }
 
 func TestRemove(t *testing.T) {
 	envs := map[string]string{
-		"ENVGUARD_TEST_REMOVE_FOO": "foo",
-		"ENVGUARD_TEST_REMOVE_BAR": "",
+		"TMPENV_TEST_REMOVE_FOO": "foo",
+		"TMPENV_TEST_REMOVE_BAR": "",
 	}
 	for k, v := range envs {
 		panicIfErr(os.Setenv(k, v))
 	}
-	defer os.Unsetenv("ENVGUARD_TEST_REMOVE_FOO")
-	defer os.Unsetenv("ENVGUARD_TEST_REMOVE_BAR")
+	defer os.Unsetenv("TMPENV_TEST_REMOVE_FOO")
+	defer os.Unsetenv("TMPENV_TEST_REMOVE_BAR")
 
 	g := New()
-	g.Add("ENVGUARD_TEST_REMOVE_FOO", "ENVGUARD_TEST_REMOVE_BAR", "ENVGUARD_TEST_REMOVE_PIYO")
+	g.Add("TMPENV_TEST_REMOVE_FOO", "TMPENV_TEST_REMOVE_BAR", "TMPENV_TEST_REMOVE_PIYO")
 
-	panicIfErr(os.Setenv("ENVGUARD_TEST_REMOVE_FOO", "aaa"))
-	panicIfErr(os.Setenv("ENVGUARD_TEST_REMOVE_BAR", "bbb"))
+	panicIfErr(os.Setenv("TMPENV_TEST_REMOVE_FOO", "aaa"))
+	panicIfErr(os.Setenv("TMPENV_TEST_REMOVE_BAR", "bbb"))
 
-	if !g.Remove("ENVGUARD_TEST_REMOVE_BAR", "ENVGUARD_TEST_REMOVE_PIYO", "ENVGUARD_TEST_REMOVE_HOGE") {
+	if !g.Remove("TMPENV_TEST_REMOVE_BAR", "TMPENV_TEST_REMOVE_PIYO", "TMPENV_TEST_REMOVE_HOGE") {
 		t.Fatal("Nothing was removed")
 	}
-	if g.Remove("ENVGUARD_TEST_REMOVE_UNKNOWN") {
+	if g.Remove("TMPENV_TEST_REMOVE_UNKNOWN") {
 		t.Fatal("Unknown env var was removed")
 	}
 
@@ -134,20 +134,20 @@ func TestRemove(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if v := os.Getenv("ENVGUARD_TEST_REMOVE_FOO"); v != "foo" {
+	if v := os.Getenv("TMPENV_TEST_REMOVE_FOO"); v != "foo" {
 		t.Error("Env var was not restored", v)
 	}
-	if v := os.Getenv("ENVGUARD_TEST_REMOVE_BAR"); v != "bbb" {
+	if v := os.Getenv("TMPENV_TEST_REMOVE_BAR"); v != "bbb" {
 		t.Error("Env var was restored", v)
 	}
 }
 
 func TestSetenvs(t *testing.T) {
 	envs := map[string]string{
-		"ENVGUARD_TEST_SETENVS_FOO": "foo",
-		"ENVGUARD_TEST_SETENVS_BAR": "",
+		"TMPENV_TEST_SETENVS_FOO": "foo",
+		"TMPENV_TEST_SETENVS_BAR": "",
 	}
-	defer os.Unsetenv("ENVGUARD_TEST_SETENVS_PIYO")
+	defer os.Unsetenv("TMPENV_TEST_SETENVS_PIYO")
 
 	for k, v := range envs {
 		panicIfErr(os.Setenv(k, v))
@@ -159,9 +159,9 @@ func TestSetenvs(t *testing.T) {
 	}()
 
 	added := map[string]string{
-		"ENVGUARD_TEST_SETENVS_FOO":  "aaa",
-		"ENVGUARD_TEST_SETENVS_BAR":  "bbb",
-		"ENVGUARD_TEST_SETENVS_PIYO": "ccc",
+		"TMPENV_TEST_SETENVS_FOO":  "aaa",
+		"TMPENV_TEST_SETENVS_BAR":  "bbb",
+		"TMPENV_TEST_SETENVS_PIYO": "ccc",
 	}
 	g, err := Setenvs(added)
 	if err != nil {
@@ -189,7 +189,7 @@ func TestSetenvs(t *testing.T) {
 		}
 	}
 
-	if e, ok := os.LookupEnv("ENVGUARD_TEST_SETENVS_PIYO"); ok {
+	if e, ok := os.LookupEnv("TMPENV_TEST_SETENVS_PIYO"); ok {
 		t.Error("Environment variable was not erased: ", e)
 	}
 }

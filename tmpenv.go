@@ -1,4 +1,4 @@
-package envguard
+package tmpenv
 
 import (
 	"os"
