@@ -97,3 +97,30 @@ func ExampleAll() {
 	// $LANG was restored
 	fmt.Println(os.Getenv("LANG"))
 }
+
+func ExampleEnvguard_Setenv() {
+	guard := New()
+
+	// $CONFIG_FOO and $CONFIG_BAR are set to "aaa" and "bbb" temporarily.
+	// They will be restored to original values when calling Restore() method.
+	guard.Setenv("CONFIG_FOO", "aaa")
+	guard.Setenv("CONFIG_BAR", "bbb")
+
+	// Do some tests...
+	fmt.Println("foo:", os.Getenv("CONFIG_FOO"))
+	fmt.Println("bar:", os.Getenv("CONFIG_BAR"))
+
+	// $CONFIG_FOO and $CONFIG_BAR will be restored. When they were already existing,
+	// they will be restored to original values. If they were not existing, they will
+	// will be removed. This function is usually called with 'defer'
+	guard.Restore()
+
+	// Both variables were restored
+	_, fooExists := os.LookupEnv("CONFIG_FOO")
+	_, barExists := os.LookupEnv("CONFIG_BAR")
+	fmt.Println(fooExists, barExists)
+	// Output:
+	// foo: aaa
+	// bar: bbb
+	// false false
+}

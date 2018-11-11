@@ -50,7 +50,7 @@ func TestFoo(t *testing.T) {
 }
 ```
 
-If you're interested in specific variables:
+If you're interested in specific environment variables:
 
 ```go
 import (
@@ -71,6 +71,33 @@ func TestFoo(t *testing.T) {
 
 	// Ensure to restore the captured variables with 'defer'
 	defer guard.Restore()
+
+	// Do some tests...
+
+	// $CONFIG_FOO and $CONFIG_BAR will be restored. When they were already existing,
+	// they will be restored to original values. If they were not existing, they will
+	// will be removed.
+}
+```
+
+Following is the same as above, but adding variables one by one:
+
+```go
+import (
+	"github.com/rhysd/go-tmpenv"
+	"testing"
+)
+
+func TestFoo(t *testing.T) {
+	guard := tmpenv.New()
+
+	// Ensure to restore the captured variables with 'defer'
+	defer guard.Restore()
+
+	// $CONFIG_FOO and $CONFIG_BAR are set to "aaa" and "bbb" temporarily.
+	// They will be restored to original values when calling Restore() method.
+	guard.Setenv("CONFIG_FOO", "aaa")
+	guard.Setenv("CONFIG_BAR", "bbb")
 
 	// Do some tests...
 
