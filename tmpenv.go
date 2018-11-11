@@ -2,7 +2,6 @@ package tmpenv
 
 import (
 	"os"
-	"runtime"
 	"strings"
 )
 
@@ -54,18 +53,7 @@ func (guard *Envguard) Remove(keys ...string) (deleted bool) {
 // returned an error except for on Windows. On Windows this function returns nil always since some
 // environment variables are not set on Windows and it is intentional.
 func (guard *Envguard) Restore() error {
-	isWindows := runtime.GOOS == "windows"
-	for k, v := range guard.maybeMod {
-		if err := os.Setenv(k, v); !isWindows && err != nil {
-			return err
-		}
-	}
-	for k := range guard.maybeAdd {
-		if err := os.Unsetenv(k); !isWindows && err != nil {
-			return err
-		}
-	}
-	return nil
+	return guard.restore()
 }
 
 // New creates a new Envguard instance.
