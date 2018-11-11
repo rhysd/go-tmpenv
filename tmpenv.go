@@ -2,6 +2,7 @@ package tmpenv
 
 import (
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -49,15 +50,18 @@ func (guard *Envguard) Remove(keys ...string) (deleted bool) {
 }
 
 // Restore restores stored environment variable values. This method is usually called with 'defer' to
-// ensure the state to be restored.
+// ensure the state to be restored. This function returns an error when underlying Setenv() calls
+// returned an error except for on Windows. On Windows this function returns nil always since some
+// environment variables are not set on Windows and it is intentional.
 func (guard *Envguard) Restore() error {
+	isWindows := runtime.GOOS == "windows"
 	for k, v := range guard.maybeMod {
-		if err := os.Setenv(k, v); err != nil {
+		if err := os.Setenv(k, v); !isWindows && err != nil {
 			return err
 		}
 	}
 	for k := range guard.maybeAdd {
-		if err := os.Unsetenv(k); err != nil {
+		if err := os.Unsetenv(k); !isWindows && err != nil {
 			return err
 		}
 	}
