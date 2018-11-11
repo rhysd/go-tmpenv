@@ -22,7 +22,8 @@ $ go get -u github.com/rhysd/go-tmpenv
 ## Usage
 
 To ensure to restore all existing environment variables and to remove all temporary environment variables,
-`tmpvar.All()` is useful.
+`tmpvar.All()` is useful. Even if environment variables are set via `os.Setenv()`, `Restore()` method
+can resture the original values.
 
 ```go
 import (
@@ -38,10 +39,10 @@ func TestFoo(t *testing.T) {
 	defer guard.Restore()
 
 	// Modify existing environment variable
-	guard.Setenv("LANG", "C")
+	os.Setenv("LANG", "C")
 
 	// Set new environment variable
-	guard.Setenv("FOO_ANSWER", "42")
+	os.Setenv("FOO_ANSWER", "42")
 
 	// Do some tests...
 

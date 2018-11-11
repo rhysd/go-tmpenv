@@ -83,8 +83,8 @@ func ExampleAll() {
 	// Capture all environment variables
 	guard := All()
 
-	// Set $LANG to "C" temporarily
-	guard.Setenv("LANG", "C")
+	// Set $LANG to "C" temporarily with os.Setenv()
+	os.Setenv("LANG", "C")
 
 	// Do something awesome...
 	fmt.Println(os.Getenv("LANG"))

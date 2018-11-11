@@ -206,7 +206,7 @@ func TestAll(t *testing.T) {
 	g := All()
 
 	mod := prev + "-modified"
-	if err := g.Setenv("TMPENV_TEST_ALL_FOO", mod); err != nil {
+	if err := os.Setenv("TMPENV_TEST_ALL_FOO", mod); err != nil {
 		t.Fatal(err)
 	}
 
