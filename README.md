@@ -5,7 +5,7 @@ Go package `tmpenv`
 [![Coverage Report][codecov-badge]][codecov]
 [![Documentation][doc-badge]][doc]
 
-`tmpenv` is a small Go package for replacing environment variables temporarily.
+[`tmpenv`](doc) is a small Go package for replacing environment variables temporarily.
 
 Setting temporary environment variables and restoring them are common pattern on testing.
 However, they have a pitfall since setting empty value to environment variable is different from
@@ -79,6 +79,13 @@ func TestFoo(t *testing.T) {
 	// will be removed.
 }
 ```
+
+Please read [the documentation][doc] for more details.
+
+## Repository
+
+This library is developed at [GitHub repository](https://github.com/rhysd/go-tmpenv). If you're facing
+some error or have some feature request, please create a new issue at the page.
 
 ## License
 
