@@ -32,16 +32,16 @@ import (
 
 func TestFoo(t *testing.T) {
 	// Captures all environment variables
-	g := tmpenv.All()
+	guard := tmpenv.All()
 
 	// Ensure to restore the captured variables with 'defer'
-	defer g.Restore()
+	defer guard.Restore()
 
 	// Modify existing environment variable
-	g.Setenv("LANG", "C")
+	guard.Setenv("LANG", "C")
 
 	// Set new environment variable
-	g.Setenv("FOO_ANSWER", "42")
+	guard.Setenv("FOO_ANSWER", "42")
 
 	// Do some tests...
 
@@ -61,7 +61,7 @@ import (
 func TestFoo(t *testing.T) {
 	// $CONFIG_FOO and $CONFIG_BAR are set to "aaa" and "bbb" temporarily.
 	// They will be restored to original values when calling Restore() method.
-	g, err := tmpenv.Setenvs(map[string]string{
+	guard, err := tmpenv.Setenvs(map[string]string{
 		"CONFIG_FOO": "aaa",
 		"CONFIG_BAR": "bbb",
 	})
@@ -70,7 +70,7 @@ func TestFoo(t *testing.T) {
 	}
 
 	// Ensure to restore the captured variables with 'defer'
-	defer g.Restore()
+	defer guard.Restore()
 
 	// Do some tests...
 
