@@ -56,7 +56,23 @@ func (guard *Envguard) Remove(keys ...string) (deleted bool) {
 // returned an error except for on Windows. On Windows this function returns nil always since some
 // environment variables are not set on Windows and it is intentional.
 func (guard *Envguard) Restore() error {
-	return guard.restore()
+	for k, v := range guard.maybeMod {
+		if k == "" {
+			continue
+		}
+		if err := os.Setenv(k, v); err != nil {
+			return err
+		}
+	}
+	for k := range guard.maybeAdd {
+		if k == "" {
+			continue
+		}
+		if err := os.Unsetenv(k); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // New creates a new Envguard instance. If one ore more keys are given, corresponding environment variables
@@ -89,7 +105,9 @@ func All() *Envguard {
 	m := make(map[string]string, len(kv))
 	for _, s := range kv {
 		if idx := strings.IndexRune(s, '='); idx >= 0 {
-			m[s[:idx]] = s[idx+1:]
+			if k := s[:idx]; k != "" {
+				m[k] = s[idx+1:]
+			}
 		}
 	}
 	return &Envguard{m, map[string]struct{}{}}

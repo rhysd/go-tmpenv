@@ -9,7 +9,7 @@ guard :shell do
     case m[0]
     when /_test\.go$/
       parent = File.dirname m[0]
-      sources = Dir["#{parent}/*.go"].reject{|p| %w(_test.go _windows.go).any?{|s| p.end_with? s } }.join(' ')
+      sources = Dir["#{parent}/*.go"].reject{|p| p.end_with? '_test.go' }.join(' ')
       run "go test -v #{m[0]} #{sources}"
       run "golint #{m[0]}"
     else

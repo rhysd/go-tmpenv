@@ -2,7 +2,6 @@ package tmpenv
 
 import (
 	"os"
-	"runtime"
 	"sort"
 	"testing"
 )
@@ -268,16 +267,12 @@ func TestSetenvsError(t *testing.T) {
 	}
 }
 
-func TestRestoreError(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("Restore() does not cause any error on Windows")
-	}
-
+func TestRestoreDoesNotCauseErrorOnEmptyKeys(t *testing.T) {
 	g := &Envguard{
 		maybeMod: map[string]string{"": "foo"},
-		maybeAdd: map[string]struct{}{},
+		maybeAdd: map[string]struct{}{"": struct{}{}},
 	}
-	if err := g.Restore(); err == nil {
-		t.Fatal("Error did not occur")
+	if err := g.Restore(); err != nil {
+		t.Fatal(err)
 	}
 }
