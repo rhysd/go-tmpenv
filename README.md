@@ -97,6 +97,8 @@ func TestFoo(t *testing.T) {
 
 	// $CONFIG_FOO and $CONFIG_BAR are set to "aaa" and "bbb" temporarily.
 	// They will be restored to original values when calling Restore() method.
+	// You need to use guard.Setenv instead of os.Setenv to notify which environment variable
+	// was temporarily set to `guard` object.
 	guard.Setenv("CONFIG_FOO", "aaa")
 	guard.Setenv("CONFIG_BAR", "bbb")
 
@@ -105,6 +107,31 @@ func TestFoo(t *testing.T) {
 	// $CONFIG_FOO and $CONFIG_BAR will be restored. When they were already existing,
 	// they will be restored to original values. If they were not existing, they will
 	// will be removed.
+}
+```
+
+You can also declare the environment variables which should be restored at `tmpenv.New()`.
+
+```go
+import (
+	"github.com/rhysd/go-tmpenv"
+	"testing"
+)
+
+func TestFoo(t *testing.T) {
+	// Let's say $CONFIG_FOO is already existing, and $CONFIG_BAR does not exist
+
+	guard := tmpenv.New("CONFIG_FOO", "CONFIG_BAR")
+
+	// Ensure to restore the captured variables with 'defer'
+	defer guard.Restore()
+
+	os.Setenv("CONFIG_FOO", "some value")
+	os.Setenv("CONFIG_BAR", "some value")
+
+	// Do some tests...
+
+	// $CONFIG_FOO will be restored to original value and $CONFIG_BAR will be unset.
 }
 ```
 

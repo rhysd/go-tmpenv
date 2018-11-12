@@ -236,3 +236,24 @@ func TestAll(t *testing.T) {
 		}
 	}
 }
+
+func TestNew(t *testing.T) {
+	panicIfErr(os.Setenv("TMPENV_TEST_NEW_FOO", "prev"))
+	defer os.Unsetenv("TMPENV_TEST_NEW_FOO")
+
+	g := New("TMPENV_TEST_NEW_FOO", "TMPENV_TEST_NEW_BAR")
+
+	panicIfErr(os.Setenv("TMPENV_TEST_NEW_FOO", "foo"))
+	panicIfErr(os.Setenv("TMPENV_TEST_NEW_BAR", "bar"))
+
+	if err := g.Restore(); err != nil {
+		t.Fatal(err)
+	}
+
+	if e := os.Getenv("TMPENV_TEST_NEW_FOO"); e != "prev" {
+		t.Fatal("env var was not restored:", e)
+	}
+	if v, ok := os.LookupEnv("TMPENV_TEST_NEW_BAR"); ok {
+		t.Fatal("env var which did not exist was not removed", v)
+	}
+}

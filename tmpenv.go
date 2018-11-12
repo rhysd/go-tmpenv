@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Envguard is a state of restored environment variables.
+// Envguard is a state of environment variables which will be restored at Restore() method call.
 type Envguard struct {
 	maybeMod map[string]string
 	maybeAdd map[string]struct{}
@@ -56,9 +56,15 @@ func (guard *Envguard) Restore() error {
 	return guard.restore()
 }
 
-// New creates a new Envguard instance.
-func New() *Envguard {
-	return &Envguard{map[string]string{}, map[string]struct{}{}}
+// New creates a new Envguard instance. If one ore more keys are given, corresponding environment variables
+// will be restored at Restore() method call.
+func New(keys ...string) *Envguard {
+	g := &Envguard{map[string]string{}, map[string]struct{}{}}
+	if len(keys) == 0 {
+		return g
+	}
+	g.Add(keys...)
+	return g
 }
 
 // Setenvs sets environment variables with given key-values. And creates a new Envguard instance to restore

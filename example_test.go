@@ -124,3 +124,33 @@ func ExampleEnvguard_Setenv() {
 	// bar: bbb
 	// false false
 }
+
+func ExampleNew() {
+	// Some value is already set
+	os.Setenv("CONFIG_FOO", "prev-foo")
+	os.Setenv("CONFIG_BAR", "prev-bar")
+
+	// Declare to modify $CONFIG_FOO and $CONFIG_BAR temporarily
+	guard := New("CONFIG_FOO", "CONFIG_BAR", "CONFIG_PIYO")
+
+	// Modify them
+	os.Setenv("CONFIG_FOO", "tmp-foo")
+	os.Setenv("CONFIG_BAR", "tmp-bar")
+	os.Setenv("CONFIG_PIYO", "tmp-piyo")
+
+	fmt.Println(os.Getenv("CONFIG_FOO"), os.Getenv("CONFIG_BAR"), os.Getenv("CONFIG_PIYO"))
+
+	// Restore previous values
+	guard.Restore()
+
+	// Now all values are restored
+	fmt.Println(os.Getenv("CONFIG_FOO"), os.Getenv("CONFIG_BAR"))
+
+	// $CONFIG_PIYO was previously not existing. So it does not exist after the restore.
+	_, ok := os.LookupEnv("CONFIG_PIYO")
+	fmt.Println("$CONFIG_PIYO exists?", ok)
+	// Output:
+	// tmp-foo tmp-bar tmp-piyo
+	// prev-foo prev-bar
+	// $CONFIG_PIYO exists? false
+}
