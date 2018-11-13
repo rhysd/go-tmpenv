@@ -115,17 +115,6 @@ func All() *Envguard {
 	m := make(map[string]string, len(kv))
 	for _, s := range kv {
 		if idx := strings.IndexRune(s, '='); idx >= 0 {
-			// Workaround for Windows. On Windows, some environment variable's key contains '='.
-			// For example, in the case of '=C:', KEY=VALUE will be something like '=C:=C:\foo\bar'.
-			// To avoid parse failure, try to find second '='.
-			if idx == 0 {
-				if i := strings.IndexRune(s[1:], '='); i >= 0 {
-					idx = i + 1
-				} else {
-					// Give up
-					continue
-				}
-			}
 			if k := s[:idx]; k != "" {
 				m[k] = s[idx+1:]
 			}
