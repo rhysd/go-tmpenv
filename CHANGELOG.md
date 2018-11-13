@@ -1,3 +1,13 @@
+<a name="v1.2.0"></a>
+# [v1.2.0](https://github.com/rhysd/go-tmpenv/releases/tag/v1.2.0) - 13 Nov 2018
+
+- New: Add `tmpenv.Unset()`, `tmpenv.UnsetAll()`, `Envguard.Unsetenv()`
+- Fix: Remove Windows workaround by fixing handling environment variable names
+- Fix: Add more tests and documentations
+
+[Changes][v1.2.0]
+
+
 <a name="v1.1.0"></a>
 # [v1.1.0](https://github.com/rhysd/go-tmpenv/releases/tag/v1.1.0) - 13 Nov 2018
 
@@ -17,6 +27,7 @@ Please see [README.md](https://github.com/rhysd/go-tmpenv/blob/master/README.md)
 [Changes][v1.0.0]
 
 
+[v1.2.0]: https://github.com/rhysd/go-tmpenv/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/rhysd/go-tmpenv/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/rhysd/go-tmpenv/tree/v1.0.0
 
