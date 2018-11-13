@@ -25,6 +25,9 @@ func (guard *Envguard) Setenv(key, val string) error {
 // Add adds an environment variable by key.
 func (guard *Envguard) Add(keys ...string) {
 	for _, k := range keys {
+		if k == "" {
+			continue
+		}
 		if v, ok := os.LookupEnv(k); ok {
 			guard.maybeMod[k] = v
 		} else {

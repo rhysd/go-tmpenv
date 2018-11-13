@@ -2,6 +2,7 @@ package tmpenv
 
 import (
 	"os"
+	"runtime"
 	"sort"
 	"testing"
 )
@@ -30,7 +31,9 @@ func TestAdd(t *testing.T) {
 	}
 
 	g := New()
-	g.Add("TMPENV_TEST_ADD_FOO", "TMPENV_TEST_ADD_BAR", "TMPENV_TEST_ADD_PIYO")
+
+	// Empty key will be ignored
+	g.Add("TMPENV_TEST_ADD_FOO", "TMPENV_TEST_ADD_BAR", "TMPENV_TEST_ADD_PIYO", "")
 
 	if v, ok := os.LookupEnv("TMPENV_TEST_ADD_PIYO"); ok {
 		t.Fatal("$TMPENV_TEST_ADD_PIYO should not exist:", v)
@@ -241,7 +244,8 @@ func TestNew(t *testing.T) {
 	panicIfErr(os.Setenv("TMPENV_TEST_NEW_FOO", "prev"))
 	defer os.Unsetenv("TMPENV_TEST_NEW_FOO")
 
-	g := New("TMPENV_TEST_NEW_FOO", "TMPENV_TEST_NEW_BAR")
+	// Empty key will be ignored
+	g := New("TMPENV_TEST_NEW_FOO", "TMPENV_TEST_NEW_BAR", "")
 
 	panicIfErr(os.Setenv("TMPENV_TEST_NEW_FOO", "foo"))
 	panicIfErr(os.Setenv("TMPENV_TEST_NEW_BAR", "bar"))
@@ -255,5 +259,25 @@ func TestNew(t *testing.T) {
 	}
 	if v, ok := os.LookupEnv("TMPENV_TEST_NEW_BAR"); ok {
 		t.Fatal("env var which did not exist was not removed", v)
+	}
+}
+
+func TestSetenvsError(t *testing.T) {
+	if _, err := Setenvs(map[string]string{"": "foo"}); err == nil {
+		t.Fatal("Error did not occur")
+	}
+}
+
+func TestRestoreError(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Restore() does not cause any error on Windows")
+	}
+
+	g := &Envguard{
+		maybeMod: map[string]string{"": "foo"},
+		maybeAdd: map[string]struct{}{},
+	}
+	if err := g.Restore(); err == nil {
+		t.Fatal("Error did not occur")
 	}
 }
