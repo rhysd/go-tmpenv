@@ -24,7 +24,7 @@ $ go get -u github.com/rhysd/go-tmpenv
 You can find some examples at [example tests](example_test.go).
 
 To ensure to restore all existing environment variables and to remove all temporary environment variables,
-`tmpvar.All()` is useful. Even if environment variables are set via `os.Setenv()`, `Restore()` method
+`tmpenv.All()` is useful. Even if environment variables are set via `os.Setenv()`, `Restore()` method
 can resture the original values.
 
 ```go
