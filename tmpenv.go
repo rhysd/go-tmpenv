@@ -51,6 +51,16 @@ func (guard *Envguard) Remove(keys ...string) (deleted bool) {
 	return
 }
 
+// Unsetenv unsets the environment variable. When Restore() method is called, the unset variable will
+// be restored. When underlying os.Unsetenv() call failed, it returns an error
+func (guard *Envguard) Unsetenv(key string) error {
+	if key == "" {
+		return nil
+	}
+	guard.Add(key)
+	return os.Unsetenv(key)
+}
+
 // Restore restores stored environment variable values. This method is usually called with 'defer' to
 // ensure the state to be restored. This function returns an error when underlying Setenv() calls
 // returned an error except for on Windows. On Windows this function returns nil always since some
@@ -111,4 +121,27 @@ func All() *Envguard {
 		}
 	}
 	return &Envguard{m, map[string]struct{}{}}
+}
+
+// Unset creates a new Envguard instance with unsetting all given anvironment variables. The unset variables
+// will be restored by calling Restore() method. When underlying os.Unsetenv() failed, it returns an error.
+func Unset(keys ...string) (*Envguard, error) {
+	g := New()
+	for _, k := range keys {
+		if err := g.Unsetenv(k); err != nil {
+			return nil, err
+		}
+	}
+	return g, nil
+}
+
+// UnsetAll creates a new Envguard instance with clearing all environment variables.
+func UnsetAll() (*Envguard, error) {
+	g := All()
+	for k := range g.maybeMod {
+		if err := os.Unsetenv(k); err != nil {
+			return nil, err
+		}
+	}
+	return g, nil
 }

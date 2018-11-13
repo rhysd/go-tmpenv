@@ -276,3 +276,90 @@ func TestRestoreDoesNotCauseErrorOnEmptyKeys(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestUnset(t *testing.T) {
+	panicIfErr(os.Setenv("TMPENV_TEST_UNSET_FOO", "prev"))
+	defer os.Unsetenv("TMPENV_TEST_UNSET_FOO")
+
+	g, err := Unset("TMPENV_TEST_UNSET_FOO", "TMPENV_TEST_UNSET_UNKNOWN", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if v, ok := os.LookupEnv("TMPENV_TEST_UNSET_FOO"); ok {
+		t.Fatal("Env var is not empty", v)
+	}
+
+	if err := g.Restore(); err != nil {
+		t.Fatal(err)
+	}
+
+	if v := os.Getenv("TMPENV_TEST_UNSET_FOO"); v != "prev" {
+		t.Fatal("Env var was not restored", v)
+	}
+}
+
+func TestUnsetenv(t *testing.T) {
+	panicIfErr(os.Setenv("TMPENV_TEST_UNSETENV_FOO", "prev"))
+	defer os.Unsetenv("TMPENV_TEST_UNSETENV_FOO")
+
+	g := New()
+	if err := g.Unsetenv("TMPENV_TEST_UNSETENV_FOO"); err != nil {
+		t.Fatal(err)
+	}
+	if err := g.Unsetenv("TMPENV_TEST_UNSETENV_UNKNOWN"); err != nil {
+		t.Fatal(err)
+	}
+	if err := g.Unsetenv(""); err != nil {
+		t.Fatal(err)
+	}
+
+	if v, ok := os.LookupEnv("TMPENV_TEST_UNSETENV_FOO"); ok {
+		t.Fatal("Env var is not empty", v)
+	}
+	if v, ok := os.LookupEnv("TMPENV_TEST_UNSETENV_UNKNOWN"); ok {
+		t.Fatal("Env var is not empty", v)
+	}
+
+	if err := g.Restore(); err != nil {
+		t.Fatal(err)
+	}
+
+	if v := os.Getenv("TMPENV_TEST_UNSETENV_FOO"); v != "prev" {
+		t.Fatal("Env var was not restored", v)
+	}
+}
+
+func TestUnsetAll(t *testing.T) {
+	// At least one env var must be set for this test
+	panicIfErr(os.Setenv("TMPENV_TEST_UNSETALL_FOO", "prev"))
+	defer os.Unsetenv("TMPENV_TEST_UNSETALL_FOO")
+	prev := os.Environ()
+	sort.Strings(prev)
+
+	g, err := UnsetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	envs := os.Environ()
+	if len(envs) > 0 {
+		t.Fatal("All envs were not cleared:", envs)
+	}
+
+	if err := g.Restore(); err != nil {
+		t.Fatal(err)
+	}
+
+	envs = os.Environ()
+	sort.Strings(envs)
+	if len(envs) != len(prev) {
+		t.Fatal("Number of envs mismatch. Wanted", len(prev), "but have", len(envs))
+	}
+	for i, want := range prev {
+		have := envs[i]
+		if want != have {
+			t.Fatal("Env does not match at index", i, "Wanted", want, "but have", have)
+		}
+	}
+}

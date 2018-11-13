@@ -21,6 +21,8 @@ $ go get -u github.com/rhysd/go-tmpenv
 
 ## Usage
 
+You can find some examples at [example tests](example_test.go).
+
 To ensure to restore all existing environment variables and to remove all temporary environment variables,
 `tmpvar.All()` is useful. Even if environment variables are set via `os.Setenv()`, `Restore()` method
 can resture the original values.
@@ -132,6 +134,35 @@ func TestFoo(t *testing.T) {
 	// Do some tests...
 
 	// $CONFIG_FOO will be restored to original value and $CONFIG_BAR will be unset.
+}
+```
+
+When you want to clear environment variables temporarily, `tmpenv.Unset` function or `Unsetenv` method
+are available.
+
+```go
+import (
+	"github.com/rhysd/go-tmpenv"
+	"testing"
+)
+
+func TestFoo(t *testing.T) {
+	// Let's say $CONFIG_FOO and $CONFIG_BAR are already existing
+
+	// Remember $CONFIG_FOO value and unset it
+	guard := tmpenv.Unset("CONFIG_FOO")
+
+	// Ensure to restore the captured variables with 'defer'
+	defer guard.Restore()
+
+	// Unsetenv method also unset the environment variable with remembering the original value
+	guard.Unsetenv("CONFIG_BAR")
+
+	// Here, $CONFIG_FOO and $CONFIG_BAR are not set
+
+	// Do some tests...
+
+	// $CONFIG_FOO and $CONFIG_BAR will be restored to original values.
 }
 ```
 

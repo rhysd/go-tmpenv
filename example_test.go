@@ -154,3 +154,57 @@ func ExampleNew() {
 	// prev-foo prev-bar
 	// $CONFIG_PIYO exists? false
 }
+
+func ExampleUnset() {
+	// Some value is already set
+	os.Setenv("CONFIG_FOO", "prev-foo")
+	os.Setenv("CONFIG_BAR", "prev-bar")
+
+	// Remember values of $CONFIG_FOO and $CONFIG_BAR and clear them
+	guard, err := Unset("CONFIG_FOO", "CONFIG_BAR")
+	if err != nil {
+		panic(err)
+	}
+
+	var ok bool
+
+	fmt.Println("Before")
+	_, ok = os.LookupEnv("CONFIG_FOO")
+	fmt.Println("  foo exists:", ok)
+	_, ok = os.LookupEnv("CONFIG_BAR")
+	fmt.Println("  bar exists:", ok)
+
+	// Restore the state. $CONFIG_FOO and $CONFIG_BAR are set to the original values
+	guard.Restore()
+
+	fmt.Println("After")
+	_, ok = os.LookupEnv("CONFIG_FOO")
+	fmt.Println("  foo exists:", ok)
+	_, ok = os.LookupEnv("CONFIG_BAR")
+	fmt.Println("  bar exists:", ok)
+	// Output:
+	// Before
+	//   foo exists: false
+	//   bar exists: false
+	// After
+	//   foo exists: true
+	//   bar exists: true
+}
+
+func ExampleUnsetAll() {
+	// Remember all environment variables and clear them all
+	guard, err := UnsetAll()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Environment variables empty?", len(os.Environ()) == 0)
+
+	// All cleared environment variables are restored to the original values
+	guard.Restore()
+
+	fmt.Println("Environment variables empty?", len(os.Environ()) == 0)
+	// Output:
+	// Environment variables empty? true
+	// Environment variables empty? false
+}
