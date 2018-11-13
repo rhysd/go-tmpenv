@@ -2,7 +2,6 @@ package tmpenv
 
 import (
 	"os"
-	"runtime"
 	"sort"
 	"testing"
 )
@@ -362,20 +361,5 @@ func TestUnsetAll(t *testing.T) {
 		if want != have {
 			t.Fatal("Env does not match at index", i, "Wanted", want, "but have", have)
 		}
-	}
-}
-
-func TestUnsetenvError(t *testing.T) {
-	if runtime.GOOS != "windows" {
-		t.Skip("Unsetenv() does not raise any error on *nix")
-	}
-	g := New("")
-	if err := g.Restore(); err == nil {
-		t.Fatal("Error did not occur")
-	}
-
-	g, err := Unset("")
-	if err == nil {
-		t.Fatal("Error did not occur")
 	}
 }
