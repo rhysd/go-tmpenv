@@ -9,9 +9,9 @@ install:
     - go version
     - go env
     - go get -v -t -d ./...
+    - set
 build: off
 test_script:
-    - setx "=C:" ""
     - go test -v -race -coverprofile=coverage.txt
 after_test:
     - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
