@@ -114,7 +114,7 @@ func All() *Envguard {
 	kv := os.Environ()
 	m := make(map[string]string, len(kv))
 	for _, s := range kv {
-		if idx := strings.IndexRune(s, '='); idx >= 0 {
+		if idx := strings.IndexRune(s, '='); idx > 0 {
 			if k := s[:idx]; k != "" {
 				m[k] = s[idx+1:]
 			}
