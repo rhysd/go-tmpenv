@@ -2,7 +2,6 @@ package tmpenv
 
 import (
 	"os"
-	"strings"
 )
 
 // Envguard is a state of environment variables which will be restored at Restore() method call.
@@ -114,9 +113,16 @@ func All() *Envguard {
 	kv := os.Environ()
 	m := make(map[string]string, len(kv))
 	for _, s := range kv {
-		if idx := strings.IndexRune(s, '='); idx > 0 {
-			if k := s[:idx]; k != "" {
-				m[k] = s[idx+1:]
+		// On Windows, environment variable names may start with '=' (e.g. =C:).
+		// To handle the variables properly, skip first character of KEY=VALUE line.
+		//
+		// https://blogs.msdn.microsoft.com/oldnewthing/20100506-00/?p=14133
+		for i := 1; i < len(s); i++ {
+			if s[i] == '=' {
+				if k := s[:i]; k != "" {
+					m[k] = s[i+1:]
+				}
+				break
 			}
 		}
 	}

@@ -6,15 +6,6 @@ import (
 	"testing"
 )
 
-func init() {
-	// On Appvyoer, there is a weird environment variable '=C:' and it causes test failure since
-	// '=C:=...' string from os.Environ() is ignored. To prevent this, unset the environment variable
-	// before running any tests.
-	if _, ok := os.LookupEnv("APPVEYOR"); ok {
-		os.Unsetenv("=C:")
-	}
-}
-
 func panicIfErr(err error) {
 	if err != nil {
 		panic(err)
