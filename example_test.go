@@ -1,7 +1,8 @@
-package tmpenv
+package tmpenv_test
 
 import (
 	"fmt"
+	"github.com/rhysd/go-tmpenv"
 	"os"
 )
 
@@ -10,7 +11,7 @@ func Example() {
 	os.Setenv("TMPENV_EXAMPLE_EXISTING", "prev")
 
 	// Create a new environment variable replacements state
-	guard := New()
+	guard := tmpenv.New()
 
 	// Set $TMPENV_EXAMPLE_NEW to "new"
 	guard.Setenv("TMPENV_EXAMPLE_NEW", "new")
@@ -54,7 +55,7 @@ func ExampleSetenvs() {
 	os.Setenv("TMPENV_EXAMPLE_EXISTING", "prev")
 
 	// Set temporary environment variables by map
-	guard, err := Setenvs(map[string]string{
+	guard, err := tmpenv.Setenvs(map[string]string{
 		"TMPENV_EXAMPLE_NEW":      "new",
 		"TMPENV_EXAMPLE_EXISTING": "updated",
 	})
@@ -81,7 +82,7 @@ func ExampleSetenvs() {
 
 func ExampleAll() {
 	// Capture all environment variables
-	guard := All()
+	guard := tmpenv.All()
 
 	// Set $LANG to "C" temporarily with os.Setenv()
 	os.Setenv("LANG", "C")
@@ -99,7 +100,7 @@ func ExampleAll() {
 }
 
 func ExampleEnvguard_Setenv() {
-	guard := New()
+	guard := tmpenv.New()
 
 	// $CONFIG_FOO and $CONFIG_BAR are set to "aaa" and "bbb" temporarily.
 	// They will be restored to original values when calling Restore() method.
@@ -131,7 +132,7 @@ func ExampleNew() {
 	os.Setenv("CONFIG_BAR", "prev-bar")
 
 	// Declare to modify $CONFIG_FOO and $CONFIG_BAR temporarily
-	guard := New("CONFIG_FOO", "CONFIG_BAR", "CONFIG_PIYO")
+	guard := tmpenv.New("CONFIG_FOO", "CONFIG_BAR", "CONFIG_PIYO")
 
 	// Modify them
 	os.Setenv("CONFIG_FOO", "tmp-foo")
@@ -161,7 +162,7 @@ func ExampleUnset() {
 	os.Setenv("CONFIG_BAR", "prev-bar")
 
 	// Remember values of $CONFIG_FOO and $CONFIG_BAR and clear them
-	guard, err := Unset("CONFIG_FOO", "CONFIG_BAR")
+	guard, err := tmpenv.Unset("CONFIG_FOO", "CONFIG_BAR")
 	if err != nil {
 		panic(err)
 	}
@@ -193,7 +194,7 @@ func ExampleUnset() {
 
 func ExampleUnsetAll() {
 	// Remember all environment variables and clear them all
-	guard, err := UnsetAll()
+	guard, err := tmpenv.UnsetAll()
 	if err != nil {
 		panic(err)
 	}
